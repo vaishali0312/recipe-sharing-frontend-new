@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getRecipe, updateRecipe, deleteRecipe } from "../services/recipeService";
 import RichEditor from "../components/RichEditor";
+import { useToast } from "../components/Toast";
 
 export default function EditRecipe() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addToast } = useToast();
 
   const [recipe, setRecipe] = useState({
     title: "",
@@ -55,11 +57,11 @@ export default function EditRecipe() {
         category: recipe.category || null,
         servings: parseInt(recipe.servings) || 1
       });
-      alert("Recipe updated!");
+      addToast("Recipe updated!", "success");
       navigate(`/recipe/${id}`);
     } catch (err) {
       console.error("Error updating recipe:", err);
-      alert("Failed to update recipe");
+      addToast("Failed to update recipe", "error");
     }
   };
 
@@ -71,11 +73,11 @@ export default function EditRecipe() {
     setDeleting(true);
     try {
       await deleteRecipe(id);
-      alert("Recipe deleted successfully!");
+      addToast("Recipe deleted successfully!", "success");
       navigate("/");
     } catch (err) {
       console.error("Error deleting recipe:", err);
-      alert("Failed to delete recipe");
+      addToast("Failed to delete recipe", "error");
     } finally {
       setDeleting(false);
     }

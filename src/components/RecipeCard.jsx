@@ -2,30 +2,44 @@ import { Link } from "react-router-dom";
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { addFavorite } from "../services/recipeService";
+import { useToast } from "./Toast";
 
 export default function RecipeCard({ recipe }) {
   const { user } = useContext(AuthContext);
+  const { addToast } = useToast();
   const [isFavorite, setIsFavorite] = useState(false);
   
   // Handle both Supabase (id) and MongoDB (_id) formats
   const recipeId = recipe.id || recipe._id;
-  const imageUrl = recipe.image_url || recipe.image || "https://via.placeholder.com/400x300?text=No+Image";
+  
+  // Use a data URL as fallback instead of external placeholder service
+  const defaultImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect fill='%23ddd' width='400' height='300'/%3E%3Ctext fill='%23988' font-family='sans-serif' font-size='24' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E";
+  const imageUrl = recipe.image_url || recipe.image || defaultImage;
 
   const handleFavorite = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     
-    if (!user) {
-      alert("Please login to add favorites");
+    // Allow guests to add favorites too
+    const userId = user?.id || 'guest';
+    
+    // Validate recipeId
+    if (!recipeId) {
+      console.error("Recipe ID is missing:", recipe);
+      addToast("Cannot add favorite: recipe ID is missing", "error");
       return;
     }
     
     try {
-      await addFavorite(recipeId, user.id);
+      console.log("Adding favorite from card:", { recipeId, userId });
+      const response = await addFavorite(recipeId, userId);
+      console.log("Favorite response:", response);
       setIsFavorite(true);
-      alert("Added to favorites!");
+      addToast("Added to favorites!", "success");
     } catch (err) {
       console.error("Error adding favorite:", err);
+      const errorMessage = err.response?.data?.message || err.message || "Failed to add to favorites";
+      addToast(errorMessage, "error");
     }
   };
 
@@ -44,7 +58,7 @@ export default function RecipeCard({ recipe }) {
           alt={recipe.title}
           className="h-48 w-full object-cover rounded-t-xl"
           onError={(e) => {
-            e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
+            e.target.src = defaultImage;
           }}
         />
         <div className="p-4">

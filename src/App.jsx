@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider } from './context/AuthContext'
+import { ToastProvider } from './components/Toast'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -18,24 +19,26 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <Router>
-          <Navbar />
-          <div className="container mx-auto p-4">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/recipe/:id" element={<RecipeDetails />} />
-              <Route path="/create" element={<CreateRecipe />} />
-              <Route path="/edit/:id" element={<EditRecipe />} />
-              <Route path="/favorites" element={<Favorites />} />
-              <Route path="/meal-planner" element={<MealPlanner />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/forum" element={<Forum />} />
-              <Route path="/ai" element={<AISuggestions />} />
-            </Routes>
-          </div>
-        </Router>
+        <ToastProvider>
+          <Router>
+            <Navbar />
+            <div className="container mx-auto p-4">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/recipe/:id" element={<RecipeDetails />} />
+                <Route path="/create" element={<CreateRecipe />} />
+                <Route path="/edit/:id" element={<EditRecipe />} />
+                <Route path="/favorites" element={<Favorites />} />
+                <Route path="/meal-planner" element={<MealPlanner />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/forum" element={<Forum />} />
+                <Route path="/ai" element={<AISuggestions />} />
+              </Routes>
+            </div>
+          </Router>
+        </ToastProvider>
       </AuthProvider>
     </ThemeProvider>
   )

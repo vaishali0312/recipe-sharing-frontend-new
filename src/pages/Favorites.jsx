@@ -9,33 +9,27 @@ export default function Favorites() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.id) {
-      getFavorites(user.id)
-        .then((res) => {
-          const favData = res.data || [];
-          setFavorites(favData);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Error fetching favorites:", err);
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
+    // For logged-in users, fetch their favorites
+    // For guests, also fetch favorites (stored with 'guest' userId)
+    const userId = user?.id || 'guest';
+    
+    getFavorites(userId)
+      .then((res) => {
+        const favData = res.data || [];
+        setFavorites(favData);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching favorites:", err);
+        setLoading(false);
+      });
   }, [user]);
 
   if (loading) {
     return <div className="p-6 text-center">Loading favorites...</div>;
   }
 
-  if (!user) {
-    return (
-      <div className="p-6 text-center">
-        <p className="text-gray-500">Please login to view your favorites.</p>
-      </div>
-    );
-  }
+  // No need to check for login - guests can also view their favorites
 
   return (
     <div className="p-6">

@@ -46,12 +46,12 @@ export default function Home() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Recipe Hub</h1>
+    <div className="p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold">Recipe Hub</h1>
         <a 
           href="/create"
-          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition"
+          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition text-sm md:text-base"
         >
           + Add Recipe
         </a>
@@ -63,7 +63,7 @@ export default function Home() {
           <p className="text-gray-600">Create your first recipe to get started!</p>
         </div>
       ) : (
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
           {recipes.map((r) => (
             <RecipeCard key={r.id || r._id} recipe={r} />
           ))}

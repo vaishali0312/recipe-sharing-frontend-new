@@ -31,3 +31,10 @@ export const deleteMealPlan = (id) => API.delete(`/planner/${id}`);
 export const suggestRecipes = (data) => API.post("/ai/suggest-recipes", data);
 export const analyzeNutrition = (data) => API.post("/ai/nutrition", data);
 export const getSubstitutes = (data) => API.post("/ai/substitutes", data);
+
+// Forum
+export const getForumPosts = () => API.get("/forum");
+export const createForumPost = (data) => API.post("/forum", data);
+export const deleteForumPost = (postId) => API.delete(`/forum/${postId}`);
+export const replyToPost = (postId, data) => API.post(`/forum/${postId}/reply`, data);
+export const likePost = (postId) => API.post(`/forum/${postId}/like`);

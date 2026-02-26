@@ -84,7 +84,7 @@ export default function Dashboard() {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
             <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
             <div className="grid md:grid-cols-2 gap-4">
-              <a href="/create-recipe" className="block p-4 border-2 border-orange-500 rounded-lg text-center hover:bg-orange-50 dark:hover:bg-orange-900">
+              <a href="/create" className="block p-4 border-2 border-orange-500 rounded-lg text-center hover:bg-orange-50 dark:hover:bg-orange-900">
                 <span className="text-2xl">➕</span>
                 <p className="font-medium">Create Recipe</p>
               </a>

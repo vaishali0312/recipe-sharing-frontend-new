@@ -3,9 +3,11 @@ import { createRecipe } from "../services/recipeService";
 import { useNavigate } from "react-router-dom";
 import RichEditor from "../components/RichEditor";
 import API from "../services/api";
+import { useToast } from "../components/Toast";
 
 export default function CreateRecipe() {
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -34,6 +36,7 @@ export default function CreateRecipe() {
       });
       
       setRecipe({ ...recipe, image_url: res.data.url });
+      addToast("Image uploaded successfully!", "success");
     } catch (err) {
       console.error("Image upload error:", err);
       // Fall back to using file URL if upload fails
@@ -44,10 +47,16 @@ export default function CreateRecipe() {
     }
   };
 
+  const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+  const [duplicateInfo, setDuplicateInfo] = useState(null);
+  const [forceCreate, setForceCreate] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setShowDuplicateWarning(false);
+    setDuplicateInfo(null);
 
     try {
       console.log("Submitting recipe with data:", recipe);
@@ -68,29 +77,107 @@ export default function CreateRecipe() {
         image_url: recipe.image_url || "",
         video_url: recipe.video_url || "",
         category: recipe.category || "",
-        servings: parseInt(recipe.servings) || 1
+        servings: parseInt(recipe.servings) || 1,
+        forceCreate: forceCreate // Flag to bypass duplicate check if user confirms
       };
 
       console.log("Sending to API:", formattedData);
 
       const response = await createRecipe(formattedData);
       console.log("Recipe created successfully:", response);
-      alert("Recipe created successfully!");
+      addToast("Recipe created successfully!", "success");
       navigate("/");
     } catch (err) {
       console.error("Error creating recipe:", err);
       console.error("Error response:", err.response);
-      setError(err.response?.data?.message || err.message || "Failed to create recipe. Please try again.");
+      
+      // Check for duplicate recipe error (409 status)
+      if (err.response?.status === 409) {
+        const duplicateData = err.response.data;
+        setDuplicateInfo(duplicateData);
+        setShowDuplicateWarning(true);
+        setError(duplicateData.message || "A similar recipe already exists");
+        addToast(duplicateData.message, "warning");
+      } else {
+        const errorMsg = err.response?.data?.message || err.message || "Failed to create recipe. Please try again.";
+        setError(errorMsg);
+        addToast(errorMsg, "error");
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleForceCreate = () => {
+    setForceCreate(true);
+    setShowDuplicateWarning(false);
+    // Re-submit the form
+    handleSubmit({ preventDefault: () => {} });
+  };
+
+  const handleCancelDuplicate = () => {
+    setShowDuplicateWarning(false);
+    setDuplicateInfo(null);
+    setForceCreate(false);
   };
 
   return (
     <div className="max-w-2xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Create New Recipe</h1>
       
-      {error && (
+      {showDuplicateWarning && duplicateInfo && (
+        <div className="mb-4 p-4 bg-yellow-50 border border-yellow-400 rounded-lg">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <span className="text-2xl">⚠️</span>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-yellow-800">
+                Similar Recipe Found
+              </h3>
+              <div className="mt-2 text-sm text-yellow-700">
+                <p>We found a similar recipe in our database:</p>
+                {duplicateInfo.duplicate && (
+                  <div className="mt-2 p-2 bg-white rounded border border-yellow-200">
+                    <p className="font-medium">"{duplicateInfo.duplicate.title}"</p>
+                    <p className="text-xs">Similarity: {Math.round(duplicateInfo.duplicate.similarity * 100)}%</p>
+                  </div>
+                )}
+                {duplicateInfo.similarRecipes && duplicateInfo.similarRecipes.length > 0 && (
+                  <div className="mt-2">
+                    <p className="font-medium">Other similar recipes:</p>
+                    <ul className="list-disc list-inside mt-1">
+                      {duplicateInfo.similarRecipes.slice(0, 3).map((recipe, idx) => (
+                        <li key={idx}>
+                          {recipe.title} ({Math.round(recipe.similarity * 100)}% match)
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleForceCreate}
+                  className="px-3 py-1 text-sm bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200"
+                >
+                  Create Anyway
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCancelDuplicate}
+                  className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded hover:bg-gray-200"
+                >
+                  Modify Recipe
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {error && !showDuplicateWarning && (
         <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
           {error}
         </div>

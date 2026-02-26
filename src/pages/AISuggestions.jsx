@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { suggestRecipes } from "../services/recipeService";
+import { useToast } from "../components/Toast";
 
 export default function AISuggestions() {
   const [ingredients, setIngredients] = useState("");
   const [diet, setDiet] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
 
   const handleSuggest = async () => {
     try {
@@ -17,9 +19,10 @@ export default function AISuggestions() {
       });
 
       setResults(res.data.suggestions);
+      addToast("Suggestions generated!", "success");
     } catch (err) {
       console.error(err);
-      alert("Failed to fetch suggestions");
+      addToast("Failed to fetch suggestions", "error");
     } finally {
       setLoading(false);
     }
