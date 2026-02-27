@@ -1,79 +1,129 @@
 # 🍲 Recipe Sharing Platform
 
-A full-stack Recipe Sharing Platform where users can create, explore, and save recipes while discovering new meal ideas. The platform provides a modern UI, secure authentication, and AI-based recipe suggestions.
+A full-stack **Recipe Sharing Platform** that allows users to create, discover, and manage recipes while engaging with a food-loving community. The platform includes AI-powered recipe suggestions, meal planning, analytics, and collaboration features to enhance the cooking experience.
 
 ---
 
-## 🚀 Features
+## 📌 Project Overview
 
-### 👤 User Authentication
-
-* Secure registration and login
-* Protected routes for authenticated users
-* Session-based user access
-
-### 🍽 Recipe Management
-
-* Create new recipes
-* View detailed recipe instructions
-* Edit and delete your recipes
-* Upload ingredients and cooking steps
-
-### ❤️ Favorites
-
-* Save recipes for quick access
-* Manage personal favorite recipes
-
-### 🤖 AI Recipe Suggestions
-
-* Get recipe ideas based on ingredients
-* Dietary preference support
-
-### 💬 Community Forum *(if implemented)*
-
-* Share cooking tips
-* Interact with other users
-
-### 📱 Responsive UI
-
-* Modern food-app style interface
-* Mobile-friendly design using Tailwind CSS
+Home chefs often struggle to organize recipes, discover new dishes, and plan meals efficiently.
+This platform solves that problem by providing a **community-driven recipe management system** with intelligent features and modern UI.
 
 ---
 
-## 🛠 Tech Stack
+## 🚀 Live Demo
+
+🔗 Add your deployed link here
+🔗 Example: https://your-app-link.com
+
+---
+
+
+## ✨ Features
+
+### 🔐 User Authentication
+
+* Secure registration & login
+* Protected routes
+* Session management
+
+### 🍳 Recipe Management
+
+* Create, edit, delete recipes
+* Upload images & add instructions
+* Rich text formatting
+* Tags & categories
+
+### 🔍 Smart Discovery
+
+* Search recipes
+* Filter by category & tags
+* Browse trending recipes
+
+### ❤️ Favorites & Bookmarking
+
+* Save favorite recipes
+* Quick access later
+
+### 💬 Community Interaction
+
+* Comments & reviews
+* Recipe ratings
+
+### 📅 Weekly Meal Planner
+
+* Plan meals for the week
+* Organize recipes efficiently
+
+### 🤖 AI-Powered Features
+
+* Suggest recipes based on ingredients
+* Ingredient substitution suggestions
+* Nutrition insights (AI-assisted)
+
+### 📊 Recipe Analytics Dashboard
+
+* Views & engagement tracking
+* Popular recipes insights
+
+### 🤝 Recipe Collaboration
+
+* Multiple users can collaborate on recipes
+
+---
+
+## 🌟 Unique Features
+
+✅ Duplicate recipe detection to prevent redundancy
+✅ AI-powered personalized recipe suggestions
+✅ Nutrition analysis insights
+✅ Dynamic servings adjustment
+✅ Community collaboration workspace
+
+---
+
+## 🛠️ Tech Stack
 
 ### Frontend
 
-* React (Vite)
+* React.js
 * React Router
-* Tailwind CSS
-* Axios
+* Context API
+* CSS / Tailwind (update if used)
 
 ### Backend
 
 * Node.js
 * Express.js
-* MongoDB (Mongoose)
-
-### Other Tools
-
 * REST APIs
-* JWT Authentication
-* AI Recipe Suggestion API
+
+### Database
+
+* Supabase / MongoDB / Firebase (update accordingly)
+
+### AI Integration
+
+* Google Gemini API for recipe suggestions & nutrition insights
 
 ---
 
-## 📁 Project Structure
+## 📂 Project Structure
 
 ```
-recipe-sharing-platform
+recipe-sharing-platform/
 │
-├── backend        # Express server & APIs
-├── public         # Static assets
-├── src            # React frontend source code
+├── frontend/
+│   ├── components/
+│   ├── pages/
+│   ├── services/
+│   └── context/
 │
-├── package.json
+├── backend/
+│   ├── routes/
+│   ├── controllers/
+│   ├── services/
+│   └── server.js
+│
 └── README.md
 ```
 
@@ -84,66 +134,96 @@ recipe-sharing-platform
 ### 1️⃣ Clone the repository
 
 ```bash
-git clone https://github.com/vaishali0312/recipe-sharing-frontend-new.git
-cd recipe-sharing-frontend-new
+git clone https://github.com/your-username/recipe-sharing-platform.git
+cd recipe-sharing-platform
 ```
-
----
 
 ### 2️⃣ Setup Backend
 
 ```bash
 cd backend
 npm install
+```
+
+Create a `.env` file:
+
+```
+PORT=5000
+DATABASE_URL=your_database_url
+JWT_SECRET=your_secret_key
+GEMINI_API_KEY=your_api_key
+```
+
+Start backend:
+
+```bash
 npm start
-```
-
-Backend runs on:
-
-```
-http://localhost:5000
 ```
 
 ---
 
 ### 3️⃣ Setup Frontend
 
-Open a new terminal:
-
 ```bash
+cd frontend
 npm install
 npm run dev
 ```
 
-Frontend runs on:
+---
+
+## 🔒 Environment Variables
+
+Create `.env` in backend:
 
 ```
-http://localhost:5173
+PORT=5000
+JWT_SECRET=your_secret
+DATABASE_URL=your_db_url
+GEMINI_API_KEY=your_api_key
 ```
 
 ---
 
-## 🔗 API Base URL
+## 📈 Future Enhancements
 
-Frontend communicates with backend using:
-
-```
-http://localhost:5000/api
-```
-
-Update this URL in production.
+* Dark mode support 🌙
+* Grocery list auto-generation
+* Voice recipe search
+* Real-time notifications
+* Mobile app version
 
 ---
 
-## 📸 Screenshots
+## 🤝 Contributing
 
-*(Add screenshots here for better presentation)*
+Contributions are welcome!
 
-Example:
+1. Fork the repository
+2. Create a new branch
+3. Commit changes
+4. Submit a pull request
 
-* Home Page
-* Recipe Details
-* Create Recipe
-* AI Suggestions
+---
 
+## 👩‍💻 Author
 
+**Vaishali Shenisetti**
+
+GitHub: https://github.com/vaishali0312
+
+---
+
+## ⭐ Show Your Support
+
+If you like this project:
+
+⭐ Star the repo
+🍴 Fork it
+📢 Share it
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License.
