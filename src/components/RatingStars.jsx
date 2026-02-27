@@ -6,7 +6,7 @@ export default function RatingStars({rating, setRating}){
           key={n}
           type="button"
           onClick={() => setRating(n)}
-          className={`cursor-pointer text-2xl ${n<=rating?'text-yellow-400':'text-gray-400'}`}
+          className={`cursor-pointer text-2xl ${n <= rating ? 'text-yellow-400' : 'text-gray-400'}`}
           aria-label={`Rate ${n} stars`}
         >
           ★

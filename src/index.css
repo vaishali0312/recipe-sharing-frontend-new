@@ -20,11 +20,11 @@
 
 a {
   font-weight: 500;
-  color: #f97316;
+  color: #0d9488;
   text-decoration: inherit;
 }
 a:hover {
-  color: #ea580c;
+  color: #0f766e;
 }
 
 body {
@@ -55,13 +55,13 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #f97316;
+  background-color: #0d9488;
   color: white;
   cursor: pointer;
   transition: all 0.25s;
 }
 button:hover {
-  background-color: #ea580c;
+  background-color: #0f766e;
 }
 button:focus,
 button:focus-visible {
@@ -70,7 +70,7 @@ button:focus-visible {
 
 /* Primary Button */
 .btn-primary {
-  background-color: #f97316;
+  background-color: #0d9488;
   color: white;
   padding: 0.6em 1.2em;
   border-radius: 0.5rem;
@@ -78,7 +78,7 @@ button:focus-visible {
   transition: all 0.2s;
 }
 .btn-primary:hover {
-  background-color: #ea580c;
+  background-color: #0f766e;
 }
 
 /* Secondary Button */
@@ -116,8 +116,8 @@ button:focus-visible {
 
 .input:focus {
   outline: none;
-  border-color: #f97316;
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
 }
 
 .input::placeholder {
@@ -132,8 +132,8 @@ button:focus-visible {
 }
 
 .dark .input:focus {
-  border-color: #f97316;
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.25);
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25);
 }
 
 /* Card styles */
@@ -175,19 +175,19 @@ button:focus-visible {
 
 /* Primary Colors */
 .bg-primary {
-  background-color: #f97316;
+  background-color: #0d9488;
 }
 
 .text-primary {
-  color: #f97316;
+  color: #0d9488;
 }
 
 .hover\:bg-primary:hover {
-  background-color: #ea580c;
+  background-color: #0f766e;
 }
 
 .focus\:ring-primary:focus {
-  --tw-ring-color: #f97316;
+  --tw-ring-color: #0d9488;
 }
 
 /* Custom scrollbar */
@@ -205,12 +205,12 @@ button:focus-visible {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #f97316;
+  background: #0d9488;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #ea580c;
+  background: #0f766e;
 }
 
 /* Toast Animation */
