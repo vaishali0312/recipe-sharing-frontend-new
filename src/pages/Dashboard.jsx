@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import { getRecipes, getFavorites, getMealPlans } from "../services/recipeService";
 import { AuthContext } from "../context/AuthContext";
 
@@ -11,45 +11,81 @@ export default function Dashboard() {
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadStats();
-  }, [user]);
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
+    if (!user?.id) {
+      setStats({ totalRecipes: 0, favoritesCount: 0, mealPlansCount: 0 });
+      setLoading(false);
+      return;
+    }
+    
+    setLoading(true);
     try {
-      const recipesRes = await getRecipes();
+      // Get all recipes and favorites in parallel
+      const [recipesRes, favRes, plansRes] = await Promise.all([
+        getRecipes(),
+        getFavorites(user.id),
+        getMealPlans(user.id)
+      ]);
+      
       const allRecipes = recipesRes.data || [];
+      const favData = favRes.data || [];
       
-      let favCount = 0;
-      let mealPlansCount = 0;
+      // Only count favorites that have valid (existing) recipes
+      // Use Set for O(1) lookup instead of making individual API calls
+      const recipeIds = new Set(allRecipes.map(r => r.id));
+      const favoritesCount = favData.filter(fav => recipeIds.has(fav.recipeId)).length;
       
-      if (user?.id) {
-        try {
-          const favRes = await getFavorites(user.id);
-          favCount = (favRes.data || []).length;
-        } catch(e) {
-          console.error("Error loading favorites:", e);
-        }
-        
-        try {
-          const plansRes = await getMealPlans();
-          mealPlansCount = (plansRes.data || []).length;
-        } catch(e) {
-          console.error("Error loading meal plans:", e);
-        }
-      }
+      const totalRecipes = allRecipes.length;
+      const mealPlansCount = (plansRes.data || []).length;
       
-      setStats({
-        totalRecipes: allRecipes.length,
-        favoritesCount: favCount,
-        mealPlansCount: mealPlansCount
-      });
+      setStats({ totalRecipes, favoritesCount, mealPlansCount });
     } catch (err) {
       console.error("Error loading stats:", err);
+      setStats({ totalRecipes: 0, favoritesCount: 0, mealPlansCount: 0 });
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
+
+  // Expose refresh function for external use
+  useEffect(() => {
+    window.refreshDashboardStats = loadStats;
+    return () => {
+      delete window.refreshDashboardStats;
+    };
+  }, [loadStats]);
+
+  // Initial load when user logs in
+  useEffect(() => {
+    if (user?.id) {
+      loadStats();
+    } else {
+      setLoading(false);
+    }
+  }, [user?.id, loadStats]);
+
+  // Handle visibility and focus
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && user?.id) {
+        loadStats();
+      }
+    };
+    
+    const handleFocus = () => {
+      if (user?.id) {
+        loadStats();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [user?.id, loadStats]);
 
   if (loading) {
     return <div className="p-6 text-center">Loading dashboard...</div>;
@@ -62,7 +98,7 @@ export default function Dashboard() {
       {user ? (
         <div className="space-y-6">
           <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl p-6 text-white">
-            <h2 className="text-xl font-semibold">Welcome back, {user.name || user.email}!</h2>
+            <h2 className="text-xl font-semibold">Welcome back, {user.username || user.name || user.email.split('@')[0]}!</h2>
             <p className="opacity-90">Here's your recipe overview</p>
           </div>
 

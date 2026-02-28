@@ -1,11 +1,12 @@
 import { useState, useContext } from "react";
 import API from "../services/api";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 
 export default function Login() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -14,15 +15,18 @@ export default function Login() {
     password: "",
   });
 
+  // Get the return URL from navigation state or default to home
+  const from = location.state?.from || "/";
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      const res = await API.post("/auth/login", form);
+      const res = await API.post("/users/login", form);
       login(res.data);
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || "Login failed. Please check your credentials.");
     } finally {
@@ -124,13 +128,6 @@ export default function Login() {
               </Link>
             </p>
           </form>
-        </div>
-
-        {/* Quick Links */}
-        <div className="mt-6 text-center">
-          <Link to="/" className="text-sm text-gray-500 hover:text-orange-500">
-            ← Continue as Guest
-          </Link>
         </div>
       </div>
     </div>

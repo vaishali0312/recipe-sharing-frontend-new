@@ -3,6 +3,7 @@ import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider } from './context/AuthContext'
 import { ToastProvider } from './components/Toast'
 import Navbar from './components/Navbar'
+import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -13,7 +14,6 @@ import Favorites from './pages/Favorites'
 import MealPlanner from './pages/MealPlanner'
 import Dashboard from './pages/Dashboard'
 import Forum from './pages/Forum'
-import AISuggestions from './pages/AISuggestions'
 
 function App() {
   return (
@@ -24,17 +24,50 @@ function App() {
             <Navbar />
             <div className="container mx-auto p-4">
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={
+                  <ProtectedRoute>
+                    <Home />
+                  </ProtectedRoute>
+                } />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/recipe/:id" element={<RecipeDetails />} />
-                <Route path="/create" element={<CreateRecipe />} />
-                <Route path="/edit/:id" element={<EditRecipe />} />
-                <Route path="/favorites" element={<Favorites />} />
-                <Route path="/meal-planner" element={<MealPlanner />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/forum" element={<Forum />} />
-                <Route path="/ai" element={<AISuggestions />} />
+                <Route path="/recipe/:id" element={
+                  <ProtectedRoute>
+                    <RecipeDetails />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Protected Routes */}
+                <Route path="/create" element={
+                  <ProtectedRoute>
+                    <CreateRecipe />
+                  </ProtectedRoute>
+                } />
+                <Route path="/edit/:id" element={
+                  <ProtectedRoute>
+                    <EditRecipe />
+                  </ProtectedRoute>
+                } />
+                <Route path="/favorites" element={
+                  <ProtectedRoute>
+                    <Favorites />
+                  </ProtectedRoute>
+                } />
+                <Route path="/meal-planner" element={
+                  <ProtectedRoute>
+                    <MealPlanner />
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/forum" element={
+                  <ProtectedRoute>
+                    <Forum />
+                  </ProtectedRoute>
+                } />
               </Routes>
             </div>
           </Router>

@@ -1,28 +1,41 @@
-# Implementation Plan
+# TODO - Recipe Sharing App Fixes
 
-## 1. Fix Favorites Implementation
-- [x] Update Favorites.jsx to get userId from AuthContext
-- [x] Add favorite button to RecipeCard.jsx
-- [x] Update recipeService to pass userId properly
-- [x] Add authentication to favorites routes
+## Task 1: Fix Favorites in Dashboard ✅
+- [x] Add automatic refresh in Dashboard when it becomes visible
+- [x] Ensure favorites count is reloaded every time Dashboard mounts
 
-## 2. Implement Meal Planner
-- [x] Create planner routes in backend
-- [x] Update MealPlanner.jsx with full UI and API integration
-- [x] Add save/load meal plans functionality
+## Task 2: Fix Delete from Favorites ✅
+- [x] Improve state update logic in Favorites.jsx after deletion
+- [x] Add proper error handling and refresh
 
-## 3. Improve Dashboard
-- [x] Update Dashboard.jsx with real data from backend
-- [x] Add recipe count, user stats, recent activity
-- [x] Show meal plans count
+## Task 3: Expand Ingredient Substitutes ✅
+- [x] Update backend/app.js to add substitutes for 20+ common ingredients
+- [x] Add more substitutes for each ingredient including dietary options
 
-## 4. Add Image Upload Support
-- [x] Add file input for image upload in CreateRecipe.jsx
-- [x] Handle image upload to backend
-- [x] Add upload endpoint to recipe routes
+## Completed Changes:
 
-## 5. Test All Features
-- [x] Test recipe creation
-- [x] Test favorites
-- [x] Test meal planner
-- [x] Test dashboard
+### 1. Dashboard.jsx (src/pages/Dashboard.jsx)
+- Added visibility change event listener to refresh stats when Dashboard becomes visible
+- Added focus event listener to refresh stats when window gains focus
+- Initial load refreshes stats automatically
+- Proper cleanup of event listeners on unmount
+
+### 2. Favorites.jsx (src/pages/Favorites.jsx)
+- Implemented optimistic UI updates - update state before API call
+- Added state rollback on error for better UX
+- Improved error handling with specific error messages
+- Preserved existing dashboard refresh functionality
+
+### 3. Backend app.js (backend/app.js)
+- Expanded substitutes database from 5 to 25+ ingredients:
+  - Dairy: butter, milk, cream, cheese, sour cream, yogurt, buttermilk, heavy cream
+  - Eggs: eggs (7 substitutes)
+  - Sweeteners: sugar, honey
+  - Flours/Starches: flour, cornstarch, baking powder, yeast
+  - Fats/Oils: oil, vegetable oil
+  - Condiments: vinegar, soy sauce
+  - Seasonings: garlic, onion, lemon, lime
+  - Grains: bread crumbs, pasta, rice
+  - Baking: chocolate, vanilla, cinnamon, nutmeg
+- Added dietary compatibility filtering (vegan, dairy-free, gluten-free, keto, etc.)
+- Each substitute includes ratio, notes, and dietary tags

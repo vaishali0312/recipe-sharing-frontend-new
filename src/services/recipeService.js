@@ -8,33 +8,35 @@ export const updateRecipe = (id, data) => API.put(`/recipes/${id}`, data);
 export const deleteRecipe = (id) => API.delete(`/recipes/${id}`);
 
 // comments
-export const getComments = (id) => API.get(`/comments/${id}`);
-export const addComment = (id, data) => API.post(`/comments/${id}`, data);
+export const getComments = (id) => API.get(`/comments/recipe/${id}`);
+export const addComment = (id, data) => API.post(`/comments/recipe/${id}`, data);
 
 // ratings
-export const getRatings = (id) => API.get(`/ratings/${id}`);
-export const addRating = (id, data) => API.post(`/ratings/${id}`, data);
+export const getRatings = (id) => API.get(`/ratings/recipe/${id}`);
+export const addRating = (id, data) => API.post(`/ratings/recipe/${id}`, data);
 
 // favorites
-export const getFavorites = (userId) => API.get(`/favorites/${userId}`);
-export const addFavorite = (recipeId, userId) => API.post(`/favorites/${recipeId}`, { userId });
-export const removeFavorite = (recipeId, userId) => API.delete(`/favorites/${recipeId}`, { data: { userId } });
+export const getFavorites = (userId) => API.get(`/favorites/user/${userId}`);
+export const addFavorite = (recipeId, userId) => API.post("/favorites", { recipeId, userId });
+export const removeFavorite = (recipeId, userId) => API.delete("/favorites", { params: { recipeId, userId } });
 
 // meal planner
-export const getMealPlans = () => API.get("/planner");
-export const getMealPlan = (id) => API.get(`/planner/${id}`);
-export const createMealPlan = (data) => API.post("/planner", data);
-export const updateMealPlan = (id, data) => API.put(`/planner/${id}`, data);
-export const deleteMealPlan = (id) => API.delete(`/planner/${id}`);
+export const getMealPlans = (userId) => API.get(`/meal-plans/user/${userId}`);
+export const getMealPlan = (id) => API.get(`/meal-plans/${id}`);
+export const createMealPlan = (data) => API.post("/meal-plans", data);
+export const updateMealPlan = (id, data) => API.put(`/meal-plans/${id}`, data);
+export const deleteMealPlan = (id) => API.delete(`/meal-plans/${id}`);
 
-// AI suggestions
-export const suggestRecipes = (data) => API.post("/ai/suggest-recipes", data);
-export const analyzeNutrition = (data) => API.post("/ai/nutrition", data);
+// Ingredient substitutes (local backend)
 export const getSubstitutes = (data) => API.post("/ai/substitutes", data);
 
 // Forum
-export const getForumPosts = () => API.get("/forum");
-export const createForumPost = (data) => API.post("/forum", data);
-export const deleteForumPost = (postId) => API.delete(`/forum/${postId}`);
-export const replyToPost = (postId, data) => API.post(`/forum/${postId}/reply`, data);
-export const likePost = (postId) => API.post(`/forum/${postId}/like`);
+export const getForumPosts = () => API.get("/forum/posts");
+export const createForumPost = (data) => API.post("/forum/posts", data);
+export const deleteForumPost = (postId) => API.delete(`/forum/posts/${postId}`);
+export const replyToPost = (postId, data) => API.post(`/forum/posts/${postId}/reply`, data);
+export const likePost = (postId) => API.post(`/forum/posts/${postId}/like`);
+
+// Collaboration
+export const getCollaborations = (recipeId) => API.get(`/collaborations/recipe/${recipeId}`);
+export const createCollaboration = (data) => API.post("/collaborations", data);

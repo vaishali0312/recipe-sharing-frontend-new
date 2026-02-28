@@ -25,7 +25,7 @@ export default function MealPlanner() {
 
   const loadPlans = async () => {
     try {
-      const res = await getMealPlans();
+      const res = user?.id ? await getMealPlans(user.id) : await getMealPlans();
       setPlans(res.data || []);
       if (res.data && res.data.length > 0 && !selectedPlan) {
         setSelectedPlan(res.data[0]);
@@ -49,7 +49,11 @@ export default function MealPlanner() {
   const handleCreatePlan = async (e) => {
     e.preventDefault();
     try {
-      const res = await createMealPlan({ name: newPlanName, meals: {} });
+      const res = await createMealPlan({ 
+        name: newPlanName, 
+        meals: {},
+        userId: user.id 
+      });
       setPlans([...plans, res.data]);
       setSelectedPlan(res.data);
       setShowCreateForm(false);

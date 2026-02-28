@@ -10,7 +10,7 @@ export default function Register() {
   const [error, setError] = useState("");
 
   const [form, setForm] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
   });
@@ -22,10 +22,14 @@ export default function Register() {
 
     try {
       // Register the user
-      const res = await API.post("/auth/register", form);
+      const res = await API.post("/users/register", {
+        username: form.username,
+        email: form.email,
+        password: form.password
+      });
       
       // Automatically login after registration
-      const loginRes = await API.post("/auth/login", {
+      const loginRes = await API.post("/users/login", {
         email: form.email,
         password: form.password
       });
@@ -78,8 +82,8 @@ export default function Register() {
                     type="text"
                     placeholder="Enter your full name"
                     className="input pl-10"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    value={form.username}
+                    onChange={(e) => setForm({ ...form, username: e.target.value })}
                     required
                   />
                 </div>

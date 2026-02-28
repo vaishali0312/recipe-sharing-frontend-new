@@ -11,6 +11,7 @@ import {
 } from "../services/recipeService";
 import { AuthContext } from "../context/AuthContext";
 import { useToast } from "../components/Toast";
+import { ThemeContext } from "../context/ThemeContext";
 import RatingStars from "../components/RatingStars";
 import CommentBox from "../components/CommentBox";
 import RecipeCollaboration from "../components/RecipeCollaboration";
@@ -21,6 +22,7 @@ export default function RecipeDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const { dark } = useContext(ThemeContext);
   const { addToast } = useToast();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -66,7 +68,17 @@ export default function RecipeDetails() {
 
     getRatings(id)
       .then((res) => {
-        setRatingData(res.data || { average: 0, count: 0 });
+        // Handle both old format (array) and new format ({average, count})
+        if (Array.isArray(res.data)) {
+          const ratings = res.data;
+          const count = ratings.length;
+          const average = count > 0 
+            ? ratings.reduce((sum, r) => sum + (r.value || r.rating || 0), 0) / count 
+            : 0;
+          setRatingData({ average: Math.round(average * 10) / 10, count });
+        } else {
+          setRatingData(res.data || { average: 0, count: 0 });
+        }
       })
       .catch((err) => {
         console.error("Error fetching ratings:", err);
@@ -135,7 +147,16 @@ export default function RecipeDetails() {
     try {
       await addRating(id, { value: rating, userId });
       const res = await getRatings(id);
-      setRatingData(res.data || { average: 0, count: 0 });
+      if (Array.isArray(res.data)) {
+        const ratings = res.data;
+        const count = ratings.length;
+        const average = count > 0 
+          ? ratings.reduce((sum, r) => sum + (r.value || r.rating || 0), 0) / count 
+          : 0;
+        setRatingData({ average: Math.round(average * 10) / 10, count });
+      } else {
+        setRatingData(res.data || { average: 0, count: 0 });
+      }
       addToast("Rating submitted successfully!", "success");
     } catch (err) {
       console.error("Rating error:", err);
@@ -153,6 +174,10 @@ export default function RecipeDetails() {
       console.log("Adding favorite:", { recipeId: id, userId });
       const response = await addFavorite(id, userId);
       console.log("Favorite response:", response);
+      // Refresh dashboard stats to update the favorites count
+      if (window.refreshDashboardStats) {
+        window.refreshDashboardStats();
+      }
       addToast("Added to favorites!", "success");
     } catch (err) {
       console.error("Favorite error:", err);
@@ -177,8 +202,8 @@ export default function RecipeDetails() {
 
   if (loading) {
     return (
-      <div className="p-6 text-center">
-        <p className="text-gray-500">Loading recipe...</p>
+      <div className={`p-6 text-center ${dark ? "text-gray-400" : "text-gray-500"}`}>
+        <p>Loading recipe...</p>
       </div>
     );
   }
@@ -198,8 +223,8 @@ export default function RecipeDetails() {
   const isScaled = servings !== originalServings;
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-<Link to="/" className="text-teal-600 hover:text-teal-700 mb-4 inline-block">
+    <div className={`max-w-3xl mx-auto p-6 ${dark ? "bg-gray-900" : "bg-white"} rounded-lg shadow`}>
+      <Link to="/" className="text-teal-600 hover:text-teal-700 mb-4 inline-block">
         ← Back to Recipes
       </Link>
 
@@ -211,15 +236,27 @@ export default function RecipeDetails() {
         />
       )}
 
-      <h1 className="text-3xl font-bold mt-4">{recipe.title}</h1>
-      {recipe.description && <p className="opacity-70 mt-2">{recipe.description}</p>}
-      <p className="opacity-70">{recipe.category}</p>
+      <h1 className={`text-3xl font-bold mt-4 ${dark ? "text-white" : "text-gray-900"}`}>
+        {recipe.title}
+      </h1>
+      {recipe.description && (
+        <p className={`mt-2 ${dark ? "text-gray-300" : "text-gray-700"}`}>
+          {recipe.description}
+        </p>
+      )}
+      <p className={`${dark ? "text-gray-400" : "text-gray-600"}`}>
+        {recipe.category}
+      </p>
 
       {ratingData.count > 0 && (
         <div className="mt-2 flex items-center gap-2">
           <span className="text-yellow-500">★</span>
-          <span>{ratingData.average}</span>
-          <span className="text-gray-500">({ratingData.count} ratings)</span>
+          <span className={dark ? "text-gray-300" : "text-gray-700"}>
+            {ratingData.average}
+          </span>
+          <span className={dark ? "text-gray-500" : "text-gray-500"}>
+            ({ratingData.count} ratings)
+          </span>
         </div>
       )}
 
@@ -235,10 +272,12 @@ export default function RecipeDetails() {
 
       <div className="mt-4 flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-2">
-          <span className="font-medium">Servings:</span>
-<button
+          <span className={`font-medium ${dark ? "text-gray-200" : "text-gray-700"}`}>
+            Servings:
+          </span>
+          <button
             onClick={() => setServings(Math.max(1, servings - 1))}
-            className="w-8 h-8 rounded-full bg-teal-600 text-white hover:bg-teal-700 flex items-center justify-center"
+            className="w-8 h-8 rounded-full bg-teal-600 text-white hover:bg-teal-700 flex items-center justify-center transition"
           >
             -
           </button>
@@ -246,12 +285,16 @@ export default function RecipeDetails() {
             type="number"
             value={servings}
             min="1"
-            className="border rounded px-2 py-1 w-16 dark:bg-gray-700 dark:border-gray-600 text-center"
+            className={`border rounded px-2 py-1 w-16 text-center ${
+              dark 
+                ? "bg-gray-700 border-gray-600 text-white" 
+                : "bg-gray-50 border-gray-200 text-gray-900"
+            }`}
             onChange={(e) => setServings(Math.max(1, parseInt(e.target.value) || 1))}
           />
           <button
             onClick={() => setServings(servings + 1)}
-            className="w-8 h-8 rounded-full bg-orange-500 text-white hover:bg-orange-600 flex items-center justify-center"
+            className="w-8 h-8 rounded-full bg-orange-500 text-white hover:bg-orange-600 flex items-center justify-center transition"
           >
             +
           </button>
@@ -266,7 +309,9 @@ export default function RecipeDetails() {
         
         {/* Social Media Share Buttons */}
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">Share:</span>
+          <span className={`text-sm ${dark ? "text-gray-400" : "text-gray-500"}`}>
+            Share:
+          </span>
           <button
             onClick={() => {
               const url = shareUrl || generateShareUrl();
@@ -323,7 +368,6 @@ export default function RecipeDetails() {
         {/* PDF Export Button */}
         <button
           onClick={() => {
-            // Generate simple HTML content for printing/saving as PDF
             const ingredientsList = Array.isArray(scaledIngredients) 
               ? scaledIngredients.map(ing => `<li>${ing}</li>`).join('')
               : `<li>${scaledIngredients}</li>`;
@@ -374,32 +418,43 @@ export default function RecipeDetails() {
         </button>
         
         {isScaled && (
-          <span className="text-sm text-orange-600 bg-orange-50 px-2 py-1 rounded">
+          <span className={`text-sm px-2 py-1 rounded ${
+            dark 
+              ? "text-orange-400 bg-orange-900/30" 
+              : "text-orange-600 bg-orange-50"
+          }`}>
             ⚠️ Ingredients scaled from {originalServings} to {servings} servings
           </span>
         )}
       </div>
 
-      <h2 className="font-semibold mt-6 text-xl">Ingredients {isScaled && `(adjusted for ${servings} servings)`}</h2>
+      <h2 className={`font-semibold mt-6 text-xl ${dark ? "text-white" : "text-gray-900"}`}>
+        Ingredients {isScaled && `(adjusted for ${servings} servings)`}
+      </h2>
       {Array.isArray(scaledIngredients) ? (
-        <ul className="list-disc list-inside mt-2 space-y-1">
+        <ul className={`list-disc list-inside mt-2 space-y-1 ${dark ? "text-gray-300" : "text-gray-700"}`}>
           {scaledIngredients.map((ing, index) => (
             <li key={index}>{ing}</li>
           ))}
         </ul>
       ) : (
-        <p>{scaledIngredients}</p>
+        <p className={dark ? "text-gray-300" : "text-gray-700"}>{scaledIngredients}</p>
       )}
 
-      <h2 className="font-semibold mt-6 text-xl">Instructions</h2>
+      <h2 className={`font-semibold mt-6 text-xl ${dark ? "text-white" : "text-gray-900"}`}>
+        Instructions
+      </h2>
       {Array.isArray(recipe.instructions) ? (
-        <ol className="list-decimal list-inside mt-2 space-y-2">
+        <ol className={`list-decimal list-inside mt-2 space-y-2 ${dark ? "text-gray-300" : "text-gray-700"}`}>
           {recipe.instructions.map((inst, index) => (
             <li key={index}>{inst}</li>
           ))}
         </ol>
       ) : (
-        <div dangerouslySetInnerHTML={{ __html: recipe.instructions }} />
+        <div 
+          className={dark ? "text-gray-300" : "text-gray-700"}
+          dangerouslySetInnerHTML={{ __html: recipe.instructions }} 
+        />
       )}
 
       <div className="mt-6 flex gap-4 flex-wrap">
@@ -418,33 +473,44 @@ export default function RecipeDetails() {
         </button>
       </div>
 
-      <div className="mt-8 border-t pt-4">
-        <h3 className="font-semibold text-lg mb-2">Rate this Recipe</h3>
+      <div className="mt-8 border-t dark:border-gray-700 pt-4">
+        <h3 className={`font-semibold text-lg mb-2 ${dark ? "text-white" : "text-gray-900"}`}>
+          Rate this Recipe
+        </h3>
         <div className="flex items-center gap-4">
           <RatingStars rating={rating} setRating={setRating} />
           <button
             onClick={submitRating}
-            className="ml-3 bg-orange-500 text-white px-3 py-1 rounded hover:bg-orange-600"
+            className="ml-3 bg-orange-500 text-white px-3 py-1 rounded hover:bg-orange-600 transition"
           >
             Submit Rating
           </button>
         </div>
       </div>
 
-      <div className="mt-8 border-t pt-4">
-        <h3 className="font-semibold text-lg mb-4">Comments ({comments.length})</h3>
+      <div className="mt-8 border-t dark:border-gray-700 pt-4">
+        <h3 className={`font-semibold text-lg mb-4 ${dark ? "text-white" : "text-gray-900"}`}>
+          Comments ({comments.length})
+        </h3>
         
         {comments.length > 0 && (
           <div className="space-y-4 mb-6">
             {comments.map((comment, index) => (
-              <div key={comment.id || index} className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+              <div 
+                key={comment.id || index} 
+                className={`p-3 rounded-lg ${
+                  dark ? "bg-gray-800" : "bg-gray-50"
+                }`}
+              >
                 <div className="flex justify-between items-center mb-1">
-                  <span className="font-medium">{comment.userName || "Anonymous"}</span>
-                  <span className="text-gray-500 text-sm">
+                  <span className={`font-medium ${dark ? "text-white" : "text-gray-900"}`}>
+                    {comment.userName || "Anonymous"}
+                  </span>
+                  <span className={dark ? "text-gray-500" : "text-gray-500 text-sm"}>
                     {comment.createdAt ? new Date(comment.createdAt).toLocaleDateString() : ""}
                   </span>
                 </div>
-                <p className="text-gray-700 dark:text-gray-300">{comment.text}</p>
+                <p className={dark ? "text-gray-300" : "text-gray-700"}>{comment.text}</p>
               </div>
             ))}
           </div>

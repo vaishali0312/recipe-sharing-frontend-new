@@ -12,7 +12,6 @@ export default function Navbar() {
     { to: "/meal-planner", label: "Meal Planner" },
     { to: "/dashboard", label: "Dashboard" },
     { to: "/forum", label: "Forum" },
-    { to: "/ai", label: "AI Suggestions" },
   ];
 
   const userLinks = [

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { addFavorite } from "../services/recipeService";
+import { addFavorite, removeFavorite } from "../services/recipeService";
 import { useToast } from "./Toast";
 
 export default function RecipeCard({ recipe }) {
@@ -31,14 +31,20 @@ export default function RecipeCard({ recipe }) {
     }
     
     try {
-      console.log("Adding favorite from card:", { recipeId, userId });
-      const response = await addFavorite(recipeId, userId);
-      console.log("Favorite response:", response);
-      setIsFavorite(true);
-      addToast("Added to favorites!", "success");
+      if (isFavorite) {
+        await removeFavorite(recipeId, userId);
+        setIsFavorite(false);
+        addToast("Removed from favorites!", "success");
+      } else {
+        console.log("Adding favorite from card:", { recipeId, userId });
+        const response = await addFavorite(recipeId, userId);
+        console.log("Favorite response:", response);
+        setIsFavorite(true);
+        addToast("Added to favorites!", "success");
+      }
     } catch (err) {
-      console.error("Error adding favorite:", err);
-      const errorMessage = err.response?.data?.message || err.message || "Failed to add to favorites";
+      console.error("Error handling favorite:", err);
+      const errorMessage = err.response?.data?.message || err.message || "Failed to update favorites";
       addToast(errorMessage, "error");
     }
   };

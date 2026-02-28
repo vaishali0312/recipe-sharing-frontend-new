@@ -146,7 +146,7 @@ export default function RecipeCollaboration({ recipeId, currentUser }) {
               className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border"
             >
               <div>
-                <p className="font-medium">{collab.user_id || collab.userId || "Unknown User"}</p>
+                <p className="font-medium">{collab.userId || collab.email || "Unknown User"}</p>
                 <p className="text-sm text-gray-500">
                   Role: 
                   <select
